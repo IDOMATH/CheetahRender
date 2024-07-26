@@ -1,8 +1,11 @@
-package renderer
+package render
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
 )
@@ -29,10 +32,28 @@ func NewRenderer(viewsLocation, viewsFileExtension, partialsFileExtension, parti
 	return rr
 }
 
-func (rr *Renderer) Render(w http.ResponseWriter, r *http.Request, name string) error {
+func (rr *Renderer) Render(w http.ResponseWriter, r *http.Request, name string, data map[string]interface{}) error {
 
 	if !rr.persistCache {
 		rr.CreateTemplateCache()
+	}
+
+	t, ok := rr.TemplateCache[name]
+	if !ok {
+		return errors.New("can't get template from cache")
+	}
+
+	buf := new(bytes.Buffer)
+
+	err := t.Execute(buf, data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = buf.WriteTo(w)
+	if err != nil {
+		fmt.Println("error writing template to browser", err)
+		return err
 	}
 
 	return nil
@@ -41,7 +62,7 @@ func (rr *Renderer) Render(w http.ResponseWriter, r *http.Request, name string) 
 func (rr *Renderer) CreateTemplateCache() {
 	cache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob(fmt.Sprintf("%s/*.%s", rr.viewsLocation, rr.viewsFileExtension))
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*%s", rr.viewsLocation, rr.viewsFileExtension))
 	if err != nil {
 		fmt.Println("could not find views: ", err)
 	}
@@ -55,7 +76,7 @@ func (rr *Renderer) CreateTemplateCache() {
 			return
 		}
 
-		matches, err := filepath.Glob(fmt.Sprintf("%s/*.%s", rr.partialsLocation, rr.partialsFileExtension))
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*%s", rr.partialsLocation, rr.partialsFileExtension))
 		if err != nil {
 			fmt.Println(err.Error())
 			rr.TemplateCache = cache
@@ -63,7 +84,7 @@ func (rr *Renderer) CreateTemplateCache() {
 		}
 
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.%s", rr.partialsLocation, rr.partialsFileExtension))
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*%s", rr.partialsLocation, rr.partialsFileExtension))
 			if err != nil {
 				fmt.Println(err.Error())
 				rr.TemplateCache = cache
