@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	renderer "github.com/idomath/CheetahFarm/CheetahRender/Renderer"
+	renderer "github.com/idomath/CheetahRender/Renderer"
 )
 
 func main() {
@@ -25,5 +25,5 @@ func main() {
 }
 
 func handleHome(rr Renderer) {
-
+	rr.Renderer.Redner("home.html")
 }
