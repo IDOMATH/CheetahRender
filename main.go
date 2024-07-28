@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	renderer "github.com/idomath/CheetahRender/Renderer"
+	renderer "github.com/IDOMATH/CheetahRender/Render"
 )
 
 func main() {
@@ -19,11 +19,13 @@ func main() {
 
 	rr := renderer.NewRenderer("./views", ".html", "./views", ".html", false)
 
-	router.HandleFunc("GET /", handleHome)
+	router.HandleFunc("GET /", handleHome(rr))
 
 	log.Fatal(server.ListenAndServe())
 }
 
-func handleHome(rr Renderer) {
-	rr.Renderer.Redner("home.html")
+func handleHome(rr *renderer.Renderer) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		rr.Render(w, r, "home.html", make(map[string]interface{}))
+	}
 }
