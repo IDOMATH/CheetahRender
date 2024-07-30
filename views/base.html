@@ -1,4 +1,4 @@
-{{ block "home" . }}
+{{ define "base" }}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,7 +14,9 @@
     <body>
         Hello world
 
-        {{ template "content" . }}
+        {{ block "content" . }}
+
+        {{ end }}
     </body>
 </html>
 {{ end }}
