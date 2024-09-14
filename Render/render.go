@@ -56,6 +56,7 @@ func (rr *Renderer) Render(w http.ResponseWriter, r *http.Request, name string, 
 		return err
 	}
 
+	fmt.Println("Render returning")
 	return nil
 }
 
@@ -95,4 +96,5 @@ func (rr *Renderer) CreateTemplateCache() {
 	}
 
 	rr.TemplateCache = cache
+	fmt.Println("Template cache created")
 }

@@ -17,15 +17,21 @@ func main() {
 		Handler: router,
 	}
 
-	rr := renderer.NewRenderer("./views", ".html", "./views", ".html", false)
+	rr := renderer.NewRenderer("./views", ".html", "./views/layouts", ".html", false)
 
 	router.HandleFunc("GET /", handleHome(rr))
 
+	fmt.Println("Server running on port: 8080")
 	log.Fatal(server.ListenAndServe())
 }
 
 func handleHome(rr *renderer.Renderer) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("handleHome func")
+		fmt.Println(len(rr.TemplateCache))
+		for k, t := range rr.TemplateCache {
+			fmt.Println(k, t.Name())
+		}
 		rr.Render(w, r, "home.html", make(map[string]interface{}))
 	}
 }
