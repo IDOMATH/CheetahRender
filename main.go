@@ -17,7 +17,7 @@ func main() {
 		Handler: router,
 	}
 
-	rr := renderer.NewRenderer("./views", ".html", "./views/layouts", ".html", false)
+	rr := renderer.NewRenderer("./views", ".go.html", "./views/layouts", ".go.html", false)
 
 	router.HandleFunc("GET /", handleHome(rr))
 
@@ -32,6 +32,6 @@ func handleHome(rr *renderer.Renderer) http.HandlerFunc {
 		for k, t := range rr.TemplateCache {
 			fmt.Println(k, t.Name())
 		}
-		rr.Render(w, r, "home.html", make(map[string]interface{}))
+		rr.Render(w, r, "home.go.html", make(map[string]interface{}))
 	}
 }

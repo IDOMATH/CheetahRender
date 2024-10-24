@@ -19,7 +19,7 @@ type Renderer struct {
 	TemplateCache         map[string]*template.Template
 }
 
-func NewRenderer(viewsLocation, viewsFileExtension, partialsFileExtension, partialsLocation string, persistCache bool) *Renderer {
+func NewRenderer(viewsLocation, viewsFileExtension, partialsLocation, partialsFileExtension string, persistCache bool) *Renderer {
 
 	rr := &Renderer{
 		viewsLocation:         viewsLocation,
@@ -61,40 +61,38 @@ func (rr *Renderer) Render(w http.ResponseWriter, r *http.Request, name string, 
 }
 
 func (rr *Renderer) CreateTemplateCache() {
-	cache := map[string]*template.Template{}
+	myCache := map[string]*template.Template{}
 
 	pages, err := filepath.Glob(fmt.Sprintf("%s/*%s", rr.viewsLocation, rr.viewsFileExtension))
 	if err != nil {
-		fmt.Println("could not find views: ", err)
+		rr.TemplateCache = myCache
+		return
 	}
 
 	for _, page := range pages {
 		name := filepath.Base(page)
 		ts, err := template.New(name).ParseFiles(page)
 		if err != nil {
-			fmt.Println(err.Error())
-			rr.TemplateCache = cache
+			rr.TemplateCache = myCache
 			return
 		}
 
 		matches, err := filepath.Glob(fmt.Sprintf("%s/*%s", rr.partialsLocation, rr.partialsFileExtension))
 		if err != nil {
-			fmt.Println(err.Error())
-			rr.TemplateCache = cache
+			rr.TemplateCache = myCache
 			return
 		}
 
 		if len(matches) > 0 {
 			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*%s", rr.partialsLocation, rr.partialsFileExtension))
 			if err != nil {
-				fmt.Println(err.Error())
-				rr.TemplateCache = cache
+				rr.TemplateCache = myCache
 				return
 			}
 		}
-		cache[name] = ts
+
+		myCache[name] = ts
 	}
 
-	rr.TemplateCache = cache
-	fmt.Println("Template cache created")
+	rr.TemplateCache = myCache
 }
