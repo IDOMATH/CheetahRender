@@ -32,7 +32,7 @@ func NewRenderer(viewsLocation, viewsFileExtension, partialsLocation, partialsFi
 	return rr
 }
 
-func (rr *Renderer) Render(w http.ResponseWriter, r *http.Request, name string, data map[string]interface{}) error {
+func (rr *Renderer) Render(w http.ResponseWriter, r *http.Request, name string, data interface{}) error {
 
 	if !rr.persistCache {
 		rr.CreateTemplateCache()
