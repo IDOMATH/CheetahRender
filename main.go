@@ -27,11 +27,8 @@ func main() {
 
 func handleHome(rr *renderer.Renderer) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("handleHome func")
-		fmt.Println(len(rr.TemplateCache))
-		for k, t := range rr.TemplateCache {
-			fmt.Println(k, t.Name())
-		}
-		rr.Render(w, r, "home.go.html", make(map[string]interface{}))
+		data := make(map[string]interface{})
+		data["PageName"] = "Home"
+		rr.Render(w, r, "home.go.html", data)
 	}
 }

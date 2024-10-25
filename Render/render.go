@@ -55,8 +55,6 @@ func (rr *Renderer) Render(w http.ResponseWriter, r *http.Request, name string, 
 		fmt.Println("error writing template to browser", err)
 		return err
 	}
-
-	fmt.Println("Render returning")
 	return nil
 }
 
